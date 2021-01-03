@@ -1,4 +1,5 @@
 import {canvas} from './canvas.js';
+import {getRandomIntInclusive} from './canvas.js';
 
 export function AsteroidField(asteroidCount) {
     this.asteroidCount = asteroidCount;
@@ -25,7 +26,7 @@ export function AsteroidField(asteroidCount) {
         ctx.clearRect(0,0,width,height);
         for(let i=0; i<af.asteroids.length; i++) {
             let asteroid = af.asteroids[i];
-            asteroid.moveRandomly();
+            asteroid.move();
         }
         window.requestAnimationFrame(function() {
             af.moveRandomly();
@@ -36,6 +37,9 @@ export function AsteroidField(asteroidCount) {
         let a = this;
         this.x0 = width * Math.random();
         this.y0 = height * Math.random();
+
+        this.orientation = getRandomIntInclusive(0,360);
+        this.speed = Math.random() * 10; //aka movement vector magnitude aka hypotneuse length
 
         this.currX = this.x0;
         this.currY = this.y0;
@@ -54,7 +58,7 @@ export function AsteroidField(asteroidCount) {
                 let yDirection = Math.random() > 0.5 ? 1 : -1;
                 let xDelta = Math.random() * 5 * xDirection;
                 let yDelta = Math.random() * 5 * yDirection;
-                a.move(xDelta,yDelta);   
+                a.moveBy(xDelta,yDelta);   
                 currFrame = 0;
             } else {
                 a.draw();
@@ -66,12 +70,21 @@ export function AsteroidField(asteroidCount) {
             ctx.beginPath();
             if(a.currX > width) a.currX = 0;
             if(a.currY > height) a.currY = 0;
+            if(a.currX < 0) a.currX = width;
+            if(a.currY < 0) a.currY = height;
             ctx.arc(a.currX,a.currY,radius,0,degrees.toRads());
             ctx.strokeStyle = 'white';
             ctx.stroke();
         }
 
-        this.move = function(x,y) {
+        this.move = function() {
+            let a = this;
+            let hypoteneuse = a.speed;
+            let x = Math.cos(a.orientation) * hypoteneuse;
+            let y = Math.sin(a.orientation) * hypoteneuse;
+            a.moveBy(x,y);
+        }
+        this.moveBy = function(x,y) {
             this.prevX = this.currX;
             this.prevY = this.currY;
             this.currX += x;

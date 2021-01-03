@@ -1,6 +1,6 @@
 import {canvasBackground} from './canvas.js'
 import {AsteroidField} from './asteroidfield.js';
-import {Ship} from './ship.js';
+import {Ship} from './shipSimple.js';
 
 export function Space(starCount, planetCount) {
     this.starCount = starCount;
@@ -14,13 +14,13 @@ export function Space(starCount, planetCount) {
 
     let ctx = canvasBackground.getContext('2d');
 
-    var asteroidField = new AsteroidField(10);
+    var asteroidField = new AsteroidField(5);
     asteroidField.createAsteroidField();
     asteroidField.moveRandomly();
 
-    var ship = new Ship();
+    var ship = new Ship(40);
     ship.create();
-    ship.rotate(20);
+    ship.fly();
 
 
     this.createStars = function() {
@@ -51,11 +51,10 @@ export function Space(starCount, planetCount) {
             let asteroid = asteroids[i];
             let asteroidX = asteroid.currX;
             let asteroidY = asteroid.currY;
-            let shipX = ship.x;
-            let shipY = ship.y;
-            if(Math.abs(asteroidX - shipX) < 20 && Math.abs(asteroidY - shipY) < 20) {
-                console.log('YOU COLLIDED WITH AN ASTEROID!!! LOSESR!!!');
-                console.log(asteroid);
+            let shipX = ship.currX;
+            let shipY = ship.currY;
+            if(Math.abs(asteroidX - shipX) < 30 && Math.abs(asteroidY - shipY) < 30) { //todo: get actual bounding shape from ship!
+                ship.explode()
             }
         }
         window.requestAnimationFrame(function() {
