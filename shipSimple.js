@@ -1,9 +1,11 @@
-import {canvasShip,lineToAngle} from './canvas.js';
+import {canvasShip,canvasShot,lineToAngle} from './canvas.js';
 
 export function Ship(radius) {
     let ctx = canvasShip.getContext('2d');
     let canvasWidth = canvasShip.getBoundingClientRect().width;
     let canvasHeight = canvasShip.getBoundingClientRect().height;
+
+    let ship = this;
 
     this.x0 = canvasWidth/2;
     this.y0 = canvasHeight/2;
@@ -21,6 +23,9 @@ export function Ship(radius) {
     this.rocketForce = 5;
     this.retroRocketForce = 5;
 
+    this.rocketFiring = false;
+    this.shots = [];
+
     this.getAccelerationInterval = function() {
         if(this.speed < this.minNonZeroSpeed) return 1;
         return this.speed / 5;
@@ -33,10 +38,24 @@ export function Ship(radius) {
 
     this.fly = function() {
         let s = this;
+        //move me
         s.move();
+        //and each of my shots
+        for(let i=0; i<s.shots.length; i++) {
+            let shot = s.shots[i];
+            shot.move();
+        }
         window.requestAnimationFrame(function() {
             s.fly();
         })
+    }
+
+    this.fireGun = function() {
+        console.log('firing shot!');
+        let s = this;
+        let shot = new Shot(s.currX,s.currY,s.orientation);
+        s.shots.push(shot);
+        shot.move();
     }
 
     this.explode = function() {
@@ -45,25 +64,25 @@ export function Ship(radius) {
         console.log('ship centerpoint: ' + this.currX + ', ' + this.currY);
         ctx.beginPath();
         let degrees = 360;
-        ctx.arc(s.currX,s+radius,10,0,degrees.toRads());
+        ctx.arc(s.currX,s.currY,20,0,degrees.toRads());
         ctx.fillStyle = 'white';
         ctx.fill();
     }
 
     this.fireRocket = function() {
         this.speedUp(this.rocketForce);
-        this.drawRocketFire();
+        this.rocketFiring = true;
     }
     this.fireRetroRocket = function() {
         this.slowDown(this.retroRocketForce);
-        this.drawRocketFire();
+        this.rocketFiring = true;
     }
     this.drawRocketFire = function() {
         let s = this;
         ctx.beginPath();
         let degrees = 360;
         ctx.arc(s.currX,s.currY,10,0,degrees.toRads());
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = '#fcc';
         ctx.fill();
     }
 
@@ -99,6 +118,12 @@ export function Ship(radius) {
         ctx.strokeStyle = 'blue';
         ctx.lineWidth = 10;
         ctx.stroke();
+
+        //draw rocket fire if firing rockets
+        if(s.rocketFiring) {
+            s.drawRocketFire();
+            s.rocketFiring = false;
+        }
     }
 
     //todo: wrong?
@@ -136,6 +161,60 @@ export function Ship(radius) {
         this.draw();
     }
     
+    function Shot(x,y,direction) {
+        this.x0 = x;
+        this.y0 = y;
+
+        this.currX = this.x0;
+        this.currY = this.y0;
+
+        this.prevX = this.currX;
+        this.prevY = this.currY;
+
+        this.speed = 8;
+        this.direction = direction;
+
+        let ctxShot = canvasShot.getContext('2d');
+        let canvasShotWidth = canvasShot.width;
+        let canvasShotHeight = canvasShot.height;
+
+        this.move = function() {
+            let shot = this;
+            let hypoteneuse = shot.speed;
+            let x = Math.cos(shot.direction.toRads()) * hypoteneuse;
+            let y = Math.sin(shot.direction.toRads()) * hypoteneuse;
+            shot.moveBy(x,y);
+        }
+        this.moveBy = function(x,y) {
+            this.prevX = this.currX;
+            this.prevY = this.currY;
+            this.currX += x;
+            this.currY += y;
+            this.draw();
+        }
+
+        this.draw = function() {
+            let shot = this;
+            //if shot is beyond screen then remove, not draw
+            if(shot.currX > canvasShotWidth
+                || shot.currY > canvasShotWidth
+                || shot.currX < 0
+                || shot.currY < 0) {
+                    console.log('shot is off screen! removing!');
+                    ship.shots = ship.shots.filter(item => item !== shot);
+                    console.log('shot removed!');
+                    return;
+                }
+            //shot is not beyond screen, continue drawing
+            let degrees = 360;
+            ctxShot.clearRect(0,0,canvasShotWidth,canvasShotWidth);
+            ctx.beginPath();
+            ctx.arc(shot.currX,shot.currY,2,0,degrees.toRads());
+            ctx.fillStyle = 'white';
+            ctx.fill();
+        }
+
+    }
 
 
     this.addEventListeners = function() {
@@ -163,8 +242,11 @@ export function Ship(radius) {
               case "ArrowRight":
                 s.rotate(5);
                 break;
+            case " ":
+                s.fireGun();
+                break;
               case "Enter":
-                //car.accelerateTo(0);
+                s.fireGun();
                 break;
               case "Esc": // IE/Edge specific value
               case "Escape":

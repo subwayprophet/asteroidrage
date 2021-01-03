@@ -65,6 +65,17 @@ export function AsteroidField(asteroidCount) {
             }
         }
 
+        this.explode = function() {
+            let a = this;
+            console.log('ASTEROID WAS HIT BY SHOT!!');
+            console.log('asteroid centerpoint: ' + a.currX + ', ' + a.currY);
+            ctx.beginPath();
+            let degrees = 360;
+            ctx.arc(a.currX,a.currY,radius,0,degrees.toRads());
+            ctx.fillStyle = 'white';
+            ctx.fill();
+        }
+    
         this.draw = function() {
             let degrees = 360;
             ctx.beginPath();

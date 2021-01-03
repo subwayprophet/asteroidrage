@@ -46,6 +46,8 @@ export function Space(starCount, planetCount) {
 
     this.checkCollisions = function() {
         let sp = this;
+
+        //check for asteroid-ship collisions...
         let asteroids = asteroidField.asteroids;
         for(let i=0; i<asteroids.length; i++) {
             let asteroid = asteroids[i];
@@ -56,7 +58,19 @@ export function Space(starCount, planetCount) {
             if(Math.abs(asteroidX - shipX) < 30 && Math.abs(asteroidY - shipY) < 30) { //todo: get actual bounding shape from ship!
                 ship.explode()
             }
-        }
+            //..and asteroid-shot collisions
+            let shots = ship.shots;
+            for(let i=0; i<shots.length; i++) {
+                let shot = shots[i];
+                let shotX = shot.currX;
+                let shotY = shot.currY;
+                if(Math.abs(asteroidX - shotX) < 30 && Math.abs(asteroidY - shotY) < 30) { //todo: get actual bounding shape from ship!
+                    asteroid.explode()
+                }                
+            }
+            }
+
+
         window.requestAnimationFrame(function() {
             sp.checkCollisions();
         })

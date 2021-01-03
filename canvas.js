@@ -1,5 +1,6 @@
 export let canvas = document.getElementById('canvasMain');
 export let canvasShip = document.getElementById('canvasShip');
+export let canvasShot = document.getElementById('canvasShot');
 export let canvasBackground = document.getElementById('canvasBackground');
 
 Number.prototype.toRads = function() {
