@@ -18,6 +18,9 @@ export function Ship(radius) {
     this.speed = 0;
     this.minNonZeroSpeed = 0.01;
 
+    this.rocketForce = 5;
+    this.retroRocketForce = 5;
+
     this.getAccelerationInterval = function() {
         if(this.speed < this.minNonZeroSpeed) return 1;
         return this.speed / 5;
@@ -42,8 +45,25 @@ export function Ship(radius) {
         console.log('ship centerpoint: ' + this.currX + ', ' + this.currY);
         ctx.beginPath();
         let degrees = 360;
-        ctx.arc(s.currX,s.currY,10,0,degrees.toRads());
+        ctx.arc(s.currX,s+radius,10,0,degrees.toRads());
         ctx.fillStyle = 'white';
+        ctx.fill();
+    }
+
+    this.fireRocket = function() {
+        this.speedUp(this.rocketForce);
+        this.drawRocketFire();
+    }
+    this.fireRetroRocket = function() {
+        this.slowDown(this.retroRocketForce);
+        this.drawRocketFire();
+    }
+    this.drawRocketFire = function() {
+        let s = this;
+        ctx.beginPath();
+        let degrees = 360;
+        ctx.arc(s.currX,s.currY,10,0,degrees.toRads());
+        ctx.fillStyle = 'red';
         ctx.fill();
     }
 
@@ -128,11 +148,11 @@ export function Ship(radius) {
             switch (event.key) {
               case "Down": // IE/Edge specific value
               case "ArrowDown":
-                s.slowDown(); //y starts at top so y positive is down
+                s.fireRetroRocket(); //y starts at top so y positive is down
               break;
               case "Up": // IE/Edge specific value
               case "ArrowUp":
-                s.speedUp();
+                s.fireRocket();
                 break;
               case "Left": // IE/Edge specific value
               case "ArrowLeft":
