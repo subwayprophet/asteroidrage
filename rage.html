@@ -1,0 +1,33 @@
+<html>
+
+<style>
+    canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+</style>
+
+<body>
+    <canvas id="canvasBackground" width="1000" height="500" style="z-index: 0; background-color: black"></canvas>
+    <canvas id="canvasMain" width="1000" height="500" style="z-index: 1"></canvas>
+    <canvas id="canvasShip" width="1000" height="500" style="z-index: 2"></canvas>
+
+    <script type="module">
+        import{Space} from './space.js';
+        var space = new Space(100,10);
+        space.createStars();
+        space.letThereBeLight();
+        space.checkCollisions();
+
+        window.space = space;
+
+
+        window.run = function(input) {
+            eval(input);
+        }
+
+    
+    </script>
+</body>
+</html>
