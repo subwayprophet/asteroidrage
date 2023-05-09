@@ -14,7 +14,7 @@ export function Space(starCount, planetCount) {
 
     let ctx = canvasBackground.getContext('2d');
 
-    var asteroidField = new AsteroidField(5);
+    var asteroidField = new AsteroidField(Math.floor(Math.random() * 10));
     asteroidField.createAsteroidField();
     asteroidField.moveRandomly();
 
