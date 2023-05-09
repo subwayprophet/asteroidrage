@@ -38,7 +38,7 @@ export function AsteroidField(asteroidCount) {
             let asteroid = af.asteroids[i];
             asteroid.move();
         }
-        this.debrisFields.forEach(df => df.move());
+        //this.debrisFields.forEach(df => df.move());
         window.requestAnimationFrame(function() {
             af.moveRandomly();
         })
@@ -137,7 +137,7 @@ function Asteroid(radius,field) {
         this.beBorn = function() {
             let df = this;
             for(let i=0; i<df.initialPiecesOfDebrisCount; i++) {
-                let radius = df.radius * Math.random() / 3;
+                let radius = df.radius * Math.random();
                 let asteroid = new Asteroid(radius,df.field);
                 asteroid.currX = df.sourceX; 
                 asteroid.currY = df.sourceY;
@@ -145,7 +145,8 @@ function Asteroid(radius,field) {
                 asteroid.prevY = df.sourceY;
                 asteroid.speed = asteroid.speed / 5;
                 asteroid.color = pickRandomColor();
-                this.piecesOfDebris.push(asteroid);
+                // this.piecesOfDebris.push(asteroid);
+                df.field.asteroids.push(asteroid);
             }
         }
 
