@@ -15,10 +15,18 @@ export function AsteroidField(asteroidCount) {
         let af = this;
         for(let i=0; i<af.asteroidCount; i++) {
             let radius = af.radius * Math.random();
-            let asteroid = new Asteroid(radius);
+            let asteroid = new Asteroid(radius,af);
             af.asteroids.push(asteroid);
             asteroid.draw();
         }
+    }
+
+    this.destroyAsteroid = function(asteroid) {
+        this.asteroids = this.asteroids.filter(a => a !== asteroid);
+    }
+
+    this.createDebrisField = function(sourceAsteroid) {
+        //todo
     }
 
     this.moveRandomly = function() {
@@ -33,10 +41,12 @@ export function AsteroidField(asteroidCount) {
         })
     }
 
-    function Asteroid(radius) {
+    function Asteroid(radius,field) {
         let a = this;
         this.x0 = width * Math.random();
         this.y0 = height * Math.random();
+
+        this.field = field;
 
         this.orientation = getRandomIntInclusive(0,360);
         this.speed = Math.random() * 10; //aka movement vector magnitude aka hypotneuse length
@@ -74,6 +84,8 @@ export function AsteroidField(asteroidCount) {
             ctx.arc(a.currX,a.currY,radius,0,degrees.toRads());
             ctx.fillStyle = 'white';
             ctx.fill();
+            a.field.destroyAsteroid(a);
+            a.createDebrisField(a);
         }
     
         this.draw = function() {
