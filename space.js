@@ -68,7 +68,7 @@ export function Space(starCount, planetCount) {
                     asteroid.explode()
                 }                
             }
-            //..and asteroid-asteroid collisions (bounce!)
+            //..and asteroid-asteroid collisions (bounce!) (actually this is boring)
             // asteroids.forEach(a => {
             //     if(a === asteroid) return;
             //     if(Math.abs(a.currX - asteroid.currX) < a.radius && Math.abs(a.currY - asteroid.currY) < a.radius) {
@@ -78,7 +78,6 @@ export function Space(starCount, planetCount) {
             //     }
             // })
         }
-
 
         window.requestAnimationFrame(function() {
             sp.checkCollisions();
