@@ -137,7 +137,7 @@ function Asteroid(radius,field) {
         this.beBorn = function() {
             let df = this;
             for(let i=0; i<df.initialPiecesOfDebrisCount; i++) {
-                let radius = df.radius * Math.random() / 5;
+                let radius = df.radius * Math.random() / 3;
                 let asteroid = new Asteroid(radius,df.field);
                 asteroid.currX = df.sourceX; 
                 asteroid.currY = df.sourceY;
