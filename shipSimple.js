@@ -17,18 +17,22 @@ export function Ship(radius) {
     this.prevY = this.prevY;
 
     this.orientation = -90;
-    this.speed = 0;
+    this.direction = -90; //initialize to same as orientation; change later based on forces
+    this.velX = 0;
+    this.velY = 0;
     this.minNonZeroSpeed = 0.01;
 
     this.rocketForce = 5;
     this.retroRocketForce = 5;
 
+    this.mass = 5; //resist the force
+
     this.rocketFiring = false;
     this.shots = [];
 
-    this.getAccelerationInterval = function() {
-        if(this.speed < this.minNonZeroSpeed) return 1;
-        return this.speed / 5;
+    this.getAccelerationInterval = function(speed) {
+        if(speed < this.minNonZeroSpeed) return 1;
+        return speed / 5;
     }
 
     this.create = function() {
@@ -140,18 +144,23 @@ export function Ship(radius) {
     }
 
     this.speedUp = function() {
-        this.speed += this.getAccelerationInterval();
+        this.velX += this.currForceX(); 
+        this.velY += this.currForceY(); 
     }
     this.slowDown = function() {
-        this.speed -= this.getAccelerationInterval();
+        this.velX -= this.currForceX(); 
+        this.velY -= this.currForceY(); 
+    }
+
+    this.currForceX = function() { //the x component of the current force vector (in the direction of this.orientation)
+        return Math.cos(this.orientation.toRads()) * this.rocketForce / this.mass;
+    }
+    this.currForceY = function() { //the y component of the current force vector (in the direction of this.orientation)
+        return Math.sin(this.orientation.toRads()) * this.rocketForce / this.mass;
     }
 
     this.move = function() {
-        let s = this;
-        let hypoteneuse = s.speed;
-        let x = Math.cos(s.orientation.toRads()) * hypoteneuse;
-        let y = Math.sin(s.orientation.toRads()) * hypoteneuse;
-        s.moveBy(x,y);
+        this.moveBy(this.velX,this.velY);
     }
     this.moveBy = function(x,y) {
         this.prevX = this.currX;
