@@ -21,19 +21,16 @@ export function Ship(radius) {
     this.velX = 0;
     this.velY = 0;
     this.minNonZeroSpeed = 0.01;
+    this.maxSpeed = 5;
 
     this.rocketForce = 5;
     this.retroRocketForce = 5;
 
-    this.mass = 5; //resist the force
+    this.mass = 5; //how much to resist force exerted on the rocket
+    this.dragCoefficient = 0; //how much to slow down every tick -- presumably zero for pure vacuum
 
     this.rocketFiring = false;
     this.shots = [];
-
-    this.getAccelerationInterval = function(speed) {
-        if(speed < this.minNonZeroSpeed) return 1;
-        return speed / 5;
-    }
 
     this.create = function() {
         this.draw();
@@ -144,12 +141,24 @@ export function Ship(radius) {
     }
 
     this.speedUp = function() {
-        this.velX += this.currForceX(); 
-        this.velY += this.currForceY(); 
+        let newVelX = this.velX + this.currForceX(); 
+        let newVelY = this.velY + this.currForceY();
+
+        //don't go over max tho -- sure this is unrealistic in space but game has limited physical space -- and game ticks are discrete and larger than planck time......
+
+        this.velX = this.governSpeed(newVelX,this.velX);
+        this.velY = this.governSpeed(newVelY,this.velY);
     }
     this.slowDown = function() {
-        this.velX -= this.currForceX(); 
-        this.velY -= this.currForceY(); 
+        let newVelX = this.velX - this.currForceX(); 
+        let newVelY = this.velY - this.currForceY(); 
+        
+        this.velX = this.governSpeed(newVelX,this.velX);
+        this.velY = this.governSpeed(newVelY,this.velY);
+    }
+
+    this.governSpeed = function(newVel,oldVel) {
+        return Math.abs(newVel) > this.maxSpeed ? oldVel : newVel;
     }
 
     this.currForceX = function() { //the x component of the current force vector (in the direction of this.orientation)
@@ -160,7 +169,15 @@ export function Ship(radius) {
     }
 
     this.move = function() {
+        //fight the drag every damn time you move!
+        this.velX = this.applyDrag(this.velX);
+        this.velY = this.applyDrag(this.velY);
         this.moveBy(this.velX,this.velY);
+    }
+    this.applyDrag = function(vel) {
+        let newVelAbs = Math.abs(vel) * (1 - this.dragCoefficient/50); //why 50? seems fun while testing?
+        let direction = vel < 0 ? -1 : 1;
+        return newVelAbs * direction;
     }
     this.moveBy = function(x,y) {
         this.prevX = this.currX;
