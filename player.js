@@ -5,6 +5,7 @@ export function Player(name) {
     this.score = 0;
 
     this.health = 1000;
+    this.power = 0;    
     
     this.highScore = parseInt(localStorage.getItem(LOCALSTORAGE_KEY_HIGHSCORE) || '0');
 
@@ -20,12 +21,17 @@ export function Player(name) {
     this.setHighScoreEl = function(el) {
         this.highScoreEl = el;
     }
+    this.powerEl;
+    this.setPowerEl = function(el) {
+        this.powerEl = el;
+    }
 
     this.update = function() {
         let p = this;
         p.scoreEl.innerText = p.score;
         p.healthEl.innerText = p.health;
         p.highScoreEl.innerText = p.highScore;
+        p.powerEl.innerText = Math.round(p.power);
         p.checkHighScore();
         window.requestAnimationFrame(function() {
             p.update();

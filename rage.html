@@ -23,6 +23,7 @@
     <div class="ui">
         score: <span id="score"></span>
         health: <span id="health"></span>
+        power: <span id="power"></span>
         <span id="highScoreContainer">high score: <span id="highScore"></span></span>
     </div>
     <canvas id="canvasBackground" width="1000" height="500" style="z-index: 0; background-color: black"></canvas>
@@ -56,6 +57,7 @@
         player.setScoreEl(document.querySelector('#score')); //todo: gather these various ui elements into their own class?
         player.setHealthEl(document.querySelector('#health'));
         player.setHighScoreEl(document.querySelector('#highScore'));
+        player.setPowerEl(document.querySelector('#power'));
         space.setPlayer(player);
 
         space.createStars();
