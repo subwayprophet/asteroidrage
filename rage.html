@@ -46,6 +46,11 @@
     button {
         font-family: 'popstarregular', sans-serif;
         width: 100%;
+        padding: 5px;
+    }
+    #startButton {
+        color: white;
+        background-color: black;
     }
 </style>
 
@@ -62,11 +67,11 @@
     <canvas id="canvasShip" width="1000" height="500" style="z-index: 2"></canvas>
     <canvas id="canvasShot" width="1000" height="500" style="z-index: 3"></canvas>
 
-    <dialog class="highest" open>
+    <dialog id="startDialog" class="highest" open>
         <p>Greetings, human! What is your name?</p>
         <input type="text" id="playerNameInput">
         <form method="dialog">
-            <button onclick="window.start()">start!</button>
+            <button id="startButton" onclick="window.start()">start!</button>
         </form>
     </dialog>
 
@@ -108,7 +113,33 @@
                 return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
             }
 
+            //set default username for amusement
             document.querySelector('#playerNameInput').value = setRandomHilariousDefaultName();
+
+            //make start button change colors awesomely
+            let startButtonColorIndex = 0;
+            let everyNFrames = 100;
+            let currFrame = 0;
+            animateStartButton();
+            function animateStartButton() {
+                if(currFrame >= everyNFrames) {
+                    let startButton = document.querySelector('#startButton');
+                    let colors = ['red','orange','blue','indigo','violet'];
+                    if(startButtonColorIndex === colors.length-1) {
+                        startButtonColorIndex = 0;
+                    } else {
+                        startButtonColorIndex++;
+                    }
+                    startButton.style.backgroundColor = colors[startButtonColorIndex];
+                    currFrame = 0;
+                } else {
+                    currFrame++;
+                }
+
+                window.requestAnimationFrame(()=> {
+                    if(!!document.querySelector('#startDialog[open]')) animateStartButton()
+                });
+            }
 
         });
 
