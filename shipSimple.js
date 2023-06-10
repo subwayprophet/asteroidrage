@@ -49,6 +49,7 @@ export function Ship(radius) {
     this.situate = function(space) {
         this.space = space;
         this.player = space.player;
+        this.player.maxPower = this.currPower;
     }
 
     this.fly = function() {
